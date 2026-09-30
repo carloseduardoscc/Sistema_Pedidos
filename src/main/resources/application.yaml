@@ -11,6 +11,7 @@ spring:
     open-in-view: false
 # Security
   security:
+    allowed-origins: []
     oauth2:
       client:
         registration:
@@ -58,6 +59,9 @@ spring:
         web-allow-others: true
       enabled: true
       path: /h2-console
+  # Security
+  security:
+    allowed-origins: ['http://localhost:*']
 # Logging
 logging:
   level:

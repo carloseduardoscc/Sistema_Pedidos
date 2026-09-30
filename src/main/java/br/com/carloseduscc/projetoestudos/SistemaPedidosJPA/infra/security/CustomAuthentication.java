@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Collection;
+import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
@@ -18,9 +19,7 @@ public class CustomAuthentication implements Authentication {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return usuario.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.toString()))
-                .toList();
+        return List.of(new SimpleGrantedAuthority(usuario.getRole().toString()));
     }
 
     @Override

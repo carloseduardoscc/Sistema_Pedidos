@@ -10,7 +10,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -41,9 +40,9 @@ public class Usuario {
     @Column
     private String senha;
 
-    @Enumerated(value = EnumType.STRING)
-    @Column(name = "roles")
-    private Set<Roles> roles;
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     // Relação
     @OneToMany(mappedBy = "usuario")

@@ -1,6 +1,6 @@
 package br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.comand;
 
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Roles;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -28,6 +28,6 @@ public record CadastrarUsuarioCommand
                 String senha,
                 @NotNull(message = "campo obrigatório")
                 @Schema(description = "Cargo do novo usuário")
-                Set<Roles> roles
+                Set<Role> roles
         ) {
 }

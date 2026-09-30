@@ -1,7 +1,7 @@
 package br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.security;
 
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.UsuarioRepository;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Roles;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Role;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Usuario;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,7 +21,7 @@ public class SecurityService {
         return null;
     }
 
-    public boolean usuarioLogadoContemRole(Roles role) {
+    public boolean usuarioLogadoContemRole(Role role) {
         return SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority(role.toString()));
     }
 }

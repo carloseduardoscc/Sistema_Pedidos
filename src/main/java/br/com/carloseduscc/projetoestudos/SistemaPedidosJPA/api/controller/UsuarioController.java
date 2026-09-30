@@ -17,13 +17,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("usuarios")
+@RequestMapping(value = "usuarios")
 @RequiredArgsConstructor
 @Tag(name = "Usuários")
 @Slf4j
@@ -65,7 +66,6 @@ public class UsuarioController implements GenericController {
         return ResponseEntity.created(uri).body(response);
     }
 
-
     @GetMapping("{usuarioId}")
     @PreAuthorize("#usuarioId == authentication.principal.id or hasRole('ADMIN')")
     @Operation(
@@ -78,6 +78,21 @@ public class UsuarioController implements GenericController {
     public ResponseEntity<UsuarioDTO> buscarDetalhes(@PathVariable UUID usuarioId) {
         log.info("Buscando detalhes do usuário de ID: {}", usuarioId);
         UsuarioDTO usuarioDTO = service.buscarDetalhes(usuarioId);
+        return ResponseEntity.ok(usuarioDTO);
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(
+            summary = "Detalha usuário autenticado", description = "Busca os detalhes do usuário autenticado"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Detalhes encontrados com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não foram fornecidas credenciais", content = @Content())
+    })
+    public ResponseEntity<UsuarioDTO> me(Authentication authentication) {
+        log.info("Buscando detalhes do usuário: {}", authentication.getName());
+        UsuarioDTO usuarioDTO = service.buscarDetalhesUsuarioLogado();
         return ResponseEntity.ok(usuarioDTO);
     }
 

@@ -9,6 +9,7 @@ import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.exception.Regr
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.core.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -23,6 +24,17 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErroResposta handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        log.info("Erro do cliente: {}", e.getMessage());
+        return new ErroResposta(
+                HttpStatus.BAD_REQUEST.value(),
+                "Erro na requisiçao",
+                List.of(new CampoErro("Causa", e.getMessage()))
+        );
+    }
+
     @ExceptionHandler(AuthenticationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErroResposta handleAuthenticationException(AuthenticationException e) {
@@ -113,6 +125,17 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    ErroResposta handleIllegalArgumentException(IllegalArgumentException e) {
+        log.info("Erro de validação: {}",e.getMessage());
+        return new ErroResposta(
+                HttpStatus.UNPROCESSABLE_ENTITY.value(),
+                "Parâmetro inválido",
+                List.of(new CampoErro("Causa", e.getMessage()))
+        );
+    }
+
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     ErroResposta handleRuntimeException(RuntimeException e) {
@@ -120,7 +143,7 @@ public class GlobalExceptionHandler {
         return new ErroResposta(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Ocorreu um erro inesperado, entre em contato com a administração.",
-                List.of(new CampoErro("Mensagem", e.getMessage()))
+                List.of()
         );
     }
 }

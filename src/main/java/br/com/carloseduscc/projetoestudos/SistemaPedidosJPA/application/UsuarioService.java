@@ -11,16 +11,19 @@ import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.validato
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.PedidoRepository;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.UsuarioRepository;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.specs.UsuarioSpecs;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.security.CustomAuthentication;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Pedido;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.StatusPedido;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Usuario;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.exception.RegraDeNegocioException;
+import com.nimbusds.jose.proc.SecurityContext;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,6 +66,15 @@ public class UsuarioService {
 
         return repository.findAll(usuarioSpecs, pageable).map(mapper::toDTO);
 
+    }
+
+    public UsuarioDTO buscarDetalhesUsuarioLogado() {
+        if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof Usuario usuario) {
+            return mapper.toDTO(usuario);
+        }
+        throw new RuntimeException("Usuário armazenado no contexto do security não é uma instância de CustomAuthentication como esperado, é um "
+                + SecurityContextHolder.getContext().getAuthentication().getPrincipal().getClass().getName()
+        );
     }
 
     @Transactional

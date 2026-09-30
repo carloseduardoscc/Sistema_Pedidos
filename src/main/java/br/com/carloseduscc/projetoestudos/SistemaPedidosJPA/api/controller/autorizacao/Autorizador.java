@@ -6,10 +6,7 @@ import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.Ite
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.PedidoRepository;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.UsuarioRepository;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.security.CustomAuthentication;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.ItemPedido;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Pedido;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Roles;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Usuario;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -40,14 +37,14 @@ public class Autorizador {
     public boolean podeAbrirNovoPedido(Authentication authentication, UUID usuarioAfetadoId) {
         if (authentication instanceof CustomAuthentication customAuthentication) {
             Usuario usuarioAutenticado = customAuthentication.getUsuario();
-            if (usuarioAutenticado.getRoles().contains(Roles.CLIENTE) && usuarioAutenticado.getId().equals(usuarioAfetadoId)) {
+            if (usuarioAutenticado.getRole().equals(Role.CLIENTE) && usuarioAutenticado.getId().equals(usuarioAfetadoId)) {
                 return true;
             }
 
             Usuario usuarioAfetado = usuarioRepository.findById(usuarioAfetadoId).orElseThrow(() ->
                     new NaoEncontradoException("Usuário informado não existe"));
 
-            if (usuarioAutenticado.getRoles().contains(Roles.ADMIN) && usuarioAfetado.getRoles().contains(Roles.CLIENTE)){
+            if (usuarioAutenticado.getRole().equals(Role.ADMIN) && usuarioAfetado.getRole().equals(Role.CLIENTE)){
                 return true;
             }
             return false;

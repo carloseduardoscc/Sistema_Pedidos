@@ -1,5 +1,6 @@
 package br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.specs;
 
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Role;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Usuario;
 import org.springframework.data.jpa.domain.Specification;
 

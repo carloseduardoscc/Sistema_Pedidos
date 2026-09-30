@@ -4,7 +4,7 @@ import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.exceptio
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.PedidoRepository;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.UsuarioRepository;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.security.SecurityService;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Roles;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Role;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.StatusPedido;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Usuario;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.exception.RegraDeNegocioException;
@@ -26,8 +26,8 @@ public class UsuarioValidator {
         validarEmailJaExiste(usuario.getEmail());
 
         if (
-                usuario.getRoles().stream().anyMatch(Roles.getFuncionarios()::contains) &&
-                        !securityService.usuarioLogadoContemRole(Roles.ADMIN)
+                Role.getFuncionarios().contains(usuario.getRole()) &&
+                        !securityService.usuarioLogadoContemRole(Role.ADMIN)
         ) {
             throw new AccessDeniedException("Apenas usuários Administradores autenticados podem cadastrar novos funcionários");
         }

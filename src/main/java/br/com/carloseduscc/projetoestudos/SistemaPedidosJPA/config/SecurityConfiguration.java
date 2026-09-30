@@ -9,6 +9,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -26,11 +28,13 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.session.DisableEncodeUrlFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.filter.CharacterEncodingFilter;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -44,6 +48,8 @@ public class SecurityConfiguration {
 
     private final GlobalExceptionHandler globalExceptionHandler;
     private final ObjectMapper objectMapper;
+    @Value("${spring.security.allowed-origins[0]}")
+    private List<String> allowedOrigins;
 
     @Bean
     SecurityFilterChain securityFilterChain(
@@ -59,7 +65,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(request -> {
                     var corsConfig = new CorsConfiguration();
-                    corsConfig.setAllowedOriginPatterns(List.of("*"));
+                    corsConfig.setAllowedOriginPatterns(allowedOrigins);
                     corsConfig.setAllowedMethods(List.of("*"));
                     corsConfig.setAllowedHeaders(List.of("*"));
                     corsConfig.setAllowCredentials(true);
@@ -120,6 +126,7 @@ public class SecurityConfiguration {
                 ErroResposta erroResposta = globalExceptionHandler.handleAccessDeniedException(accessDeniedException);
                 response.setStatus(erroResposta.status());
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                response.setCharacterEncoding("UTF-8");
 
                 objectMapper.writeValue(response.getWriter(), erroResposta);
             }
@@ -134,6 +141,7 @@ public class SecurityConfiguration {
                 ErroResposta erroResposta = globalExceptionHandler.handleAuthenticationException(authException);
                 response.setStatus(erroResposta.status());
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                response.setCharacterEncoding("UTF-8");
 
                 objectMapper.writeValue(response.getWriter(), erroResposta);
             }

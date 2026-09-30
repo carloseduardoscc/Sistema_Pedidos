@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -25,20 +26,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
         Optional<Usuario> usuarioOpt = service.obterPorLogin(login);
 
-        if (usuarioOpt.isEmpty()){
-            logger.atDebug().log("Tentativa de login recusada, usuário não existe:\n{}",login);
+        if (usuarioOpt.isEmpty()) {
+            logger.atDebug().log("Tentativa de login recusada, usuário não existe:\n{}", login);
             throw new UsernameNotFoundException("Usuário não encontrado");
         }
 
         Usuario usuario = usuarioOpt.get();
-
-
-//        return User.builder()
-//                .username(usuario.getEmail())
-//                .password(usuario.getSenha())
-//                .disabled(!usuario.getAtivo())
-//                .roles(usuario.getRoles().stream().map(Roles::toString).collect(Collectors.joining()))
-//                .build();
 
         return new CustomUser(
                 usuario.getId(),
@@ -48,9 +41,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 true,
                 true,
                 true,
-                usuario.getRoles().stream()
-                        .map(r->new SimpleGrantedAuthority("ROLE_"+r.toString()))
-                        .collect(Collectors.toCollection(ArrayList<GrantedAuthority>::new))
+                List.of(new SimpleGrantedAuthority("ROLE_" + usuario.getRole().toString()))
         );
     }
 }

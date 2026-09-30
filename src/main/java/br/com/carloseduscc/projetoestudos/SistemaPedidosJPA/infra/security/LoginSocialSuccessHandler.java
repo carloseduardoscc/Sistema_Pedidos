@@ -1,7 +1,7 @@
 package br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.security;
 
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.UsuarioService;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Roles;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Role;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Usuario;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -50,7 +50,7 @@ public class LoginSocialSuccessHandler extends SavedRequestAwareAuthenticationSu
         usuarioViaOauth2.setNome(gerarNomeApartirDeEmail(oAuth2UserEmail));
         usuarioViaOauth2.setEmail(oAuth2UserEmail);
         usuarioViaOauth2.setSenha(SENHA_PADRAO_NOVO_USUARIO);
-        usuarioViaOauth2.setRoles(Set.of(Roles.getRolePadrao()));
+        usuarioViaOauth2.setRole(Role.getRolePadrao());
         return usuarioViaOauth2;
     }
 

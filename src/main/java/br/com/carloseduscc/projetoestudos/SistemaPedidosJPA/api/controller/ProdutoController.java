@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
@@ -24,7 +25,7 @@ import java.net.URI;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("produtos")
+@RequestMapping(value = "produtos")
 @RequiredArgsConstructor
 @Tag(name = "Produtos")
 @Slf4j
@@ -39,7 +40,7 @@ public class ProdutoController implements GenericController {
     @ApiResponses({
             @ApiResponse(responseCode = "203", description = "Produto cadastrado com sucesso"),
             @ApiResponse(responseCode = "422", description = "Erro de validação", content = @Content())})
-    public ResponseEntity<ProdutoDTO> cadastrar(@RequestBody ProdutoDTO produtoDTO) {
+    public ResponseEntity<ProdutoDTO> cadastrar(@RequestBody @Valid ProdutoDTO produtoDTO) {
         var prodCadastrado = service.cadastrar(produtoDTO);
         URI location = gerarHeaderLocation(prodCadastrado.id().toString());
         return ResponseEntity.created(location).body(prodCadastrado);

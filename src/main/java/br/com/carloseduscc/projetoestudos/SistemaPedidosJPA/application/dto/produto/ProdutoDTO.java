@@ -1,10 +1,7 @@
 package br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.dto.produto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -18,6 +15,7 @@ public record ProdutoDTO(
         String nome,
         @Schema(description = "Preço unitário do produto", example = "2500.00")
         @DecimalMin(value = "0.01", message = "Preço unitário do produto deve ser maior que 0.01")
+        @NotNull(message = "Preço unitário não deve ser nulo")
         BigDecimal precoUnitario
 )
 {}

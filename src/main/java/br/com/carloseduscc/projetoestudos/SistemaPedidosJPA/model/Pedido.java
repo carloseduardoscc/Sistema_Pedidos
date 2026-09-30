@@ -57,6 +57,9 @@ public class Pedido {
     @ManyToOne
     private Usuario usuario;
 
+    @ManyToOne
+    private Usuario responsavel;
+
     // Auditoria
     @CreatedDate
     @Column(name = "data_cadastro")
