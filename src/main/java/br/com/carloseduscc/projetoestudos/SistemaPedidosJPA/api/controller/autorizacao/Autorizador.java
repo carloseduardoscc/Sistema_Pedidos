@@ -1,12 +1,14 @@
 package br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.api.controller.autorizacao;
 
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.PedidoService;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.exception.NaoEncontradoException;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.ItemPedidoRepository;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.PedidoRepository;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.UsuarioRepository;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.security.CustomAuthentication;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.*;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.ItemPedido;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Pedido;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Role;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Usuario;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -22,7 +24,6 @@ public class Autorizador {
     private final PedidoRepository pedidoRepository;
     private final ItemPedidoRepository itemPedidoRepository;
     private final UsuarioRepository usuarioRepository;
-    private final PedidoService pedidoService;
 
     public boolean isUsuarioDonoItem(UUID itemId, UUID usuarioId) {
         Optional<ItemPedido> itemOpt = itemPedidoRepository.findById(itemId);

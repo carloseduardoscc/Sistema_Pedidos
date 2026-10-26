@@ -7,15 +7,16 @@ import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.strategi
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.strategies.fluxo_pedidos.TornarPagoStrategy;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.PedidoRepository;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.UsuarioRepository;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.specs.UsuarioSpecs;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.*;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Pedido;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Role;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.StatusPedido;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Usuario;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Configuration

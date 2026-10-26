@@ -1,4 +1,4 @@
-package br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.security;
+package br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.security.filters;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -22,7 +22,7 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
         String user = authenticationOpt.isPresent() ? authenticationOpt.get().getName() : "ANONYMOUS";
         String roles = authenticationOpt.isPresent() ? authenticationOpt.get().getAuthorities().toString() : "ANONYMOUS";
         MDC.put("user", user);
-        MDC.put("roles", roles);
+        MDC.put("role", roles);
 
         filterChain.doFilter(request, response);
     }

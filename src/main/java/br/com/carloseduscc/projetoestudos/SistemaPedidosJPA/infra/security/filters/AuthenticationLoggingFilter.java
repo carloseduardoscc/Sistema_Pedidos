@@ -1,4 +1,4 @@
-package br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.security;
+package br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.security.filters;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

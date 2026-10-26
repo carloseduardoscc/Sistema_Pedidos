@@ -7,7 +7,7 @@ import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.dto.pedi
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.dto.pedido.PedidoDTO;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.dto.pedido.PedidoDetalhadoDTO;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.query_filters.RequisicaoFiltroPedido;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.security.SecurityService;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.security.services.SecurityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -49,7 +49,7 @@ public class PedidoController implements GenericController {
             @ApiResponse(responseCode = "404", description = "Pedido não encontrado", content = @Content())
     })
     public ResponseEntity<ItemAdicionadoResponseDTO> adicionarItemAoPedido(@PathVariable @Valid UUID idPedido, @RequestBody @Valid AdicionarItemPedidoCommand itemCmd) {
-        log.info("Adicionando item com produto {} ao pedido de ID: {}", itemCmd.produtoId(), idPedido);
+        log.debug("Adicionando item com produto {} ao pedido de ID: {}", itemCmd.produtoId(), idPedido);
         var dtoResponse = service.adicionarItem(idPedido, itemCmd);
         URI uri = gerarHeaderLocation(dtoResponse.idItem().toString());
         return ResponseEntity.created(uri).body(dtoResponse);
@@ -65,7 +65,7 @@ public class PedidoController implements GenericController {
             @ApiResponse(responseCode = "404", description = "O pedido não foi encontrado", content = @Content())
     })
     public ResponseEntity<PedidoDetalhadoDTO> buscarDetalhes(@PathVariable UUID idPedido) {
-        log.info("Buscando detalhes do pedido de ID: {}", idPedido);
+        log.debug("Buscando detalhes do pedido de ID: {}", idPedido);
         var responseDTO = service.obterDetalhes(idPedido);
         return ResponseEntity.ok(responseDTO);
     }
@@ -82,7 +82,7 @@ public class PedidoController implements GenericController {
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC)
             @ParameterObject Pageable pageable,
             @ModelAttribute RequisicaoFiltroPedido requisicaoFiltro) {
-        log.info("Pesquisando pedidos com parâmetros e paginação: {}", requisicaoFiltro.toString());
+        log.debug("Pesquisando pedidos com parâmetros e paginação: {}", requisicaoFiltro.toString());
         Page<PedidoDTO> page = service.pesquisarListagem(pageable, requisicaoFiltro);
         return ResponseEntity.ok(page);
     }
@@ -96,7 +96,7 @@ public class PedidoController implements GenericController {
             @ParameterObject Pageable pageable,
             @ModelAttribute RequisicaoFiltroPedido requisicaoFiltro,
             SecurityService securityService) {
-        log.info("Pesquisando pedidos do usuário: {}", securityService.obterUsuarioLogado().getEmail());
+        log.debug("Pesquisando pedidos do usuário: {}", securityService.obterUsuarioLogado().getEmail());
         requisicaoFiltro.setUsuarioEmail(securityService.obterUsuarioLogado().getEmail());
         Page<PedidoDTO> page = service.pesquisarListagem(pageable, requisicaoFiltro);
         return ResponseEntity.ok(page);
@@ -113,7 +113,7 @@ public class PedidoController implements GenericController {
             @ApiResponse(responseCode = "400", description = "Violação de regra de negócio: Apenas pedidos pendentes podem ser pagos pelo CLIENTE dono do pedido", content = @Content())
     })
     public ResponseEntity<Void> tornarPago(@PathVariable UUID idPedido) {
-        log.info("Tornando pago pedido com ID: {}", idPedido);
+        log.debug("Tornando pago pedido com ID: {}", idPedido);
         service.tornarPago(idPedido);
         return ResponseEntity.noContent().build();
     }
@@ -129,7 +129,7 @@ public class PedidoController implements GenericController {
             @ApiResponse(responseCode = "400", description = "Violação de regra de negócio: Apenas pedidos pagos podem ser enviados por um LOJISTA ou ADMIN", content = @Content())
     })
     public ResponseEntity<Void> tornarEnviado(@PathVariable UUID idPedido) {
-        log.info("Tornando enviado pedido com ID: {}", idPedido);
+        log.debug("Tornando enviado pedido com ID: {}", idPedido);
         service.tornarEnviado(idPedido);
         return ResponseEntity.noContent().build();
     }
@@ -145,7 +145,7 @@ public class PedidoController implements GenericController {
             @ApiResponse(responseCode = "400", description = "Violação de regra de negócio: Apenas pedidos enviados podem ser entregues pelo seu ENTREGADOR ou ADMIN", content = @Content())
     })
     public ResponseEntity<Void> tornarEntregue(@PathVariable UUID idPedido) {
-        log.info("Tornando entregue pedido com ID: {}", idPedido);
+        log.debug("Tornando entregue pedido com ID: {}", idPedido);
         service.tornarEntregue(idPedido);
         return ResponseEntity.noContent().build();
     }
@@ -161,7 +161,7 @@ public class PedidoController implements GenericController {
             @ApiResponse(responseCode = "400", description = "Violação de regra de negócio: Apenas pedidos pagos ou pendentes podem ser cancelados pelo seu CLIENTE ou seu ADMIN", content = @Content())
     })
     public ResponseEntity<Void> tornarCancelado(@PathVariable UUID idPedido) {
-        log.info("Cancelando pedido com ID: {}", idPedido);
+        log.debug("Cancelando pedido com ID: {}", idPedido);
         service.tornarCancelado(idPedido);
         return ResponseEntity.noContent().build();
     }

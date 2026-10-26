@@ -1,4 +1,4 @@
-package br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.security;
+package br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.security.services;
 
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.UsuarioRepository;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Role;

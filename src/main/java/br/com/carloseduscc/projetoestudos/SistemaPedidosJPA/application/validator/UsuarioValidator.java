@@ -3,7 +3,7 @@ package br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.validat
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.exception.RegistroDuplicadoException;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.PedidoRepository;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.UsuarioRepository;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.security.SecurityService;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.security.services.SecurityService;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Role;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.StatusPedido;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Usuario;

@@ -1,9 +1,10 @@
 package br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.comand;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @Schema(name = "Requisição para adicionar item")

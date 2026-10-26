@@ -41,6 +41,7 @@ public class ProdutoController implements GenericController {
             @ApiResponse(responseCode = "203", description = "Produto cadastrado com sucesso"),
             @ApiResponse(responseCode = "422", description = "Erro de validação", content = @Content())})
     public ResponseEntity<ProdutoDTO> cadastrar(@RequestBody @Valid ProdutoDTO produtoDTO) {
+        log.debug("Cadastrando novo produto: {}", produtoDTO.nome());
         var prodCadastrado = service.cadastrar(produtoDTO);
         URI location = gerarHeaderLocation(prodCadastrado.id().toString());
         return ResponseEntity.created(location).body(prodCadastrado);
@@ -56,6 +57,7 @@ public class ProdutoController implements GenericController {
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC)
             @ParameterObject Pageable pageable,
             @ModelAttribute RequisicaoFiltroProduto requisicaoFiltro){
+        log.debug("Listando produtos com filtros: {}", requisicaoFiltro);
         Page<ProdutoDTO> lista = service.listar(pageable, requisicaoFiltro);
         return ResponseEntity.ok().body(lista);
     }
@@ -69,6 +71,7 @@ public class ProdutoController implements GenericController {
             @ApiResponse(responseCode = "404", description = "Produto não encontrado", content = @Content())
     })
     public ResponseEntity<ProdutoDTO> buscarPorId(@PathVariable UUID id){
+        log.debug("Buscando produto por ID: {}", id);
         ProdutoDTO dto = service.buscarPorId(id);
         return ResponseEntity.ok().body(dto);
     }
@@ -83,6 +86,7 @@ public class ProdutoController implements GenericController {
             @ApiResponse(responseCode = "422", description = "Erro de validação", content = @Content())})
 
     public ResponseEntity<Void> atualizar(@PathVariable UUID id, @RequestBody ProdutoDTO dto){
+        log.debug("Atualizando produto de id {}", id);
         service.atualizar(id, dto);
         return ResponseEntity.noContent().build();
     }
@@ -95,6 +99,7 @@ public class ProdutoController implements GenericController {
             @ApiResponse(responseCode = "204", description = "Produto deletado com sucesso"),
             @ApiResponse(responseCode = "404", description = "Produto não encontrado", content = @Content())})
     public ResponseEntity<Void> deletar(@PathVariable UUID id){
+        log.debug("Deletando produto de id {}", id);
         service.deletar(id);
         return ResponseEntity.noContent().build();
     }

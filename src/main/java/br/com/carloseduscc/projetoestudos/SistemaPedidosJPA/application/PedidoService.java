@@ -15,8 +15,9 @@ import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.strategi
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.ItemPedidoRepository;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.PedidoRepository;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.ProdutoRepository;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.UsuarioRepository;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.*;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.ItemPedido;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Pedido;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Produto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -1,6 +1,6 @@
 package br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.config;
 
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.security.SecurityService;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.security.services.SecurityService;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Usuario;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

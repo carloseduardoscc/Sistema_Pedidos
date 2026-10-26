@@ -1,4 +1,4 @@
-package br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.comand;
+package br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.dto.auth;
 
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -7,10 +7,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import java.util.Set;
-
 @Schema(name = "Requisição para cadastrar usuário")
-public record CadastrarUsuarioCommand
+public record CadastrarUsuarioDTO
         (
                 @NotBlank(message = "campo obrigatório")
                 @Size(max = 100, message = "campo precisa ter menos que 100 caracteres")
@@ -28,6 +26,6 @@ public record CadastrarUsuarioCommand
                 String senha,
                 @NotNull(message = "campo obrigatório")
                 @Schema(description = "Cargo do novo usuário")
-                Set<Role> roles
+                Role role
         ) {
 }

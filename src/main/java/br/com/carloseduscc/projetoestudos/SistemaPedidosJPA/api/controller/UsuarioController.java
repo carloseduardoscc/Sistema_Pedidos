@@ -3,7 +3,6 @@ package br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.api.controller;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.api.controller.common.GenericController;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.UsuarioService;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.comand.AtualizarDadosUsuarioCommand;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.comand.CadastrarUsuarioCommand;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.dto.pedido.AbrirPedidoResponseDTO;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.dto.usuario.UsuarioDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,23 +31,6 @@ public class UsuarioController implements GenericController {
 
     private final UsuarioService service;
 
-    @PostMapping
-    @Operation(
-            summary = "Cadastro", description = "Realiza cadastro de usuários"
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "203", description = "Cadastro realizado com sucesso"),
-            @ApiResponse(responseCode = "409", description = "O e-mail já está sendo utilizado", content = @Content()),
-            @ApiResponse(responseCode = "422", description = "Erro de validação", content = @Content()),
-            @ApiResponse(responseCode = "403", description = "Apenas usuários administradores podem cadastrar novos funcionários", content = @Content())
-    })
-    public ResponseEntity<UsuarioDTO> cadastrar(@RequestBody @Valid CadastrarUsuarioCommand usuarioCmd){
-        log.info("Cadastrando novo usuário {}", usuarioCmd.email());
-        UsuarioDTO usuarioSalvo = service.cadastrarUsuario(usuarioCmd);
-        URI uri = gerarHeaderLocation(usuarioSalvo.id().toString());
-        return ResponseEntity.created(uri).body(usuarioSalvo);
-    }
-
     @PostMapping("{usuarioId}/pedidos")
     @PreAuthorize("@autorizador.podeAbrirNovoPedido(authentication, #usuarioId)")
     @Operation(
@@ -60,7 +42,7 @@ public class UsuarioController implements GenericController {
             @ApiResponse(responseCode = "400", description = "Violação de regra de negócio: Usuário já possúi pedido pendente", content = @Content())
     })
     public ResponseEntity<AbrirPedidoResponseDTO> abrirNovoPedido(@PathVariable UUID usuarioId) {
-        log.info("Abrindo novo pedido para o usuário de id {}", usuarioId);
+        log.debug("Abrindo novo pedido para o usuário de id {}", usuarioId);
         var response = service.abrirNovoPedido(usuarioId);
         URI uri = gerarHeaderLocation(response.id().toString());
         return ResponseEntity.created(uri).body(response);
@@ -76,7 +58,7 @@ public class UsuarioController implements GenericController {
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content())
     })
     public ResponseEntity<UsuarioDTO> buscarDetalhes(@PathVariable UUID usuarioId) {
-        log.info("Buscando detalhes do usuário de ID: {}", usuarioId);
+        log.debug("Buscando detalhes do usuário de ID: {}", usuarioId);
         UsuarioDTO usuarioDTO = service.buscarDetalhes(usuarioId);
         return ResponseEntity.ok(usuarioDTO);
     }
@@ -91,7 +73,7 @@ public class UsuarioController implements GenericController {
             @ApiResponse(responseCode = "401", description = "Não foram fornecidas credenciais", content = @Content())
     })
     public ResponseEntity<UsuarioDTO> me(Authentication authentication) {
-        log.info("Buscando detalhes do usuário: {}", authentication.getName());
+        log.debug("Buscando detalhes do usuário: {}", authentication.getName());
         UsuarioDTO usuarioDTO = service.buscarDetalhesUsuarioLogado();
         return ResponseEntity.ok(usuarioDTO);
     }
@@ -110,7 +92,7 @@ public class UsuarioController implements GenericController {
             @RequestParam(value = "page", defaultValue = "0") Integer numeroPagina,
             @RequestParam(value = "size", defaultValue = "10") Integer tamanhoPagina
     ) {
-        log.info("Pesquisada listagem paginada de usuários");
+        log.debug("Pesquisada listagem paginada de usuários");
         Page<UsuarioDTO> pagina = service.pesquisarListagem(nome, email, numeroPagina, tamanhoPagina);
         return ResponseEntity.ok(pagina);
     }
@@ -130,7 +112,7 @@ public class UsuarioController implements GenericController {
             @RequestBody @Valid AtualizarDadosUsuarioCommand cmd,
             @PathVariable UUID usuarioId
     ) {
-        log.info("Atualizando dados do usuário de ID: {}", usuarioId);
+        log.debug("Atualizando dados do usuário de ID: {}", usuarioId);
         service.atualizarDados(cmd, usuarioId);
         return ResponseEntity.noContent().build();
     }
@@ -146,7 +128,7 @@ public class UsuarioController implements GenericController {
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content()),
     })
     public ResponseEntity<Object> desativarUsuario(@PathVariable UUID usuarioId) {
-        log.info("Desativando usuário de ID: {}", usuarioId);
+        log.debug("Desativando usuário de ID: {}", usuarioId);
         service.desativarUsuario(usuarioId);
         return ResponseEntity.noContent().build();
     }

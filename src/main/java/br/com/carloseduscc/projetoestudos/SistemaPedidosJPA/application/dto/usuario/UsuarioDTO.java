@@ -3,7 +3,6 @@ package br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.dto.usu
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.util.List;
 import java.util.UUID;
 
 @Schema(name = "Usuário")
