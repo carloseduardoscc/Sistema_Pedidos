@@ -27,6 +27,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID>, JpaSpec
 """)
     List<Usuario> findByRoleFetchPedido(@Param("role") Role role);
 
+    List<Usuario> findByRole(Role role);
+
     @Query("""
         SELECT DISTINCT u
         FROM Usuario u

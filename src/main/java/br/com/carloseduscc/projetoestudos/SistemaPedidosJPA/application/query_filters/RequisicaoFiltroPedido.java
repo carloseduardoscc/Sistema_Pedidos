@@ -24,7 +24,7 @@ public class RequisicaoFiltroPedido {
 
         if(dateMin != null) spec = spec.and(isAfter(dateMin));
         if(dateMax != null) spec = spec.and(isBefore(dateMax));
-        if(usuarioEmail != null) spec = spec.and(usuarioEmailIsLike(usuarioEmail));
+        if(usuarioEmail != null) spec = spec.and(usuarioOrResponsavelEmailIsLike(usuarioEmail));
 
         return spec;
     }

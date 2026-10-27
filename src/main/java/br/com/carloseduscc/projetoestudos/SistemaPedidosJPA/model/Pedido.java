@@ -28,7 +28,6 @@ public class Pedido {
     public static final float VALOR_TOTAL_MAXIMO_PEDIDO = 10_000;
 
     {
-        this.dataHoraPedido = LocalDateTime.now();
         this.itens = new HashSet<>();
         this.status = StatusPedido.PENDENTE;
     }
@@ -118,9 +117,10 @@ public class Pedido {
         }
     }
 
-    public void mudarStatus(StatusPedido status){
+    public AtualizacaoStatus mudarStatus(StatusPedido status){
         this.status.validarTransacao(status);
-        adicionarAtualizacaoDeStatus(status);
+        AtualizacaoStatus atualizacaoStatus = adicionarAtualizacaoDeStatus(status);
         this.status = status;
+        return atualizacaoStatus;
     }
 }

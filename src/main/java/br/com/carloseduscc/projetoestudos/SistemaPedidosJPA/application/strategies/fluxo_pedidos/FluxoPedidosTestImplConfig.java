@@ -1,30 +1,36 @@
-package br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.config;
+package br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.strategies.fluxo_pedidos;
 
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.exception.NaoEncontradoException;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.strategies.fluxo_pedidos.TornarCanceladoStrategy;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.strategies.fluxo_pedidos.TornarEntregueStrategy;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.strategies.fluxo_pedidos.TornarEnviadoStrategy;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.strategies.fluxo_pedidos.TornarPagoStrategy;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.AtualizacaoStatusRepository;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.PedidoRepository;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.UsuarioRepository;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Pedido;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Role;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.StatusPedido;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Usuario;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.*;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Esse conjunto de implementações é do fluxo de pedidos para teste
+ * Ao realizar alguma ação ele passa o pedido para um responsável do primeiro usuário do cargo correto
+ *
+ * Ex.: Ao tornar um pedido pago, se busca o primeiro Lojista do banco para atribuir o pedido a ele como responsável
+ */
+
 @Configuration
 @AllArgsConstructor
-public class ApplicationConfiguration {
+@Profile("test")
+public class FluxoPedidosTestImplConfig {
 
     private final PedidoRepository pedidoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final AtualizacaoStatusRepository atualizacaoStatusRepository;
 
     @Bean
     public TornarPagoStrategy tornarPagoStrategyTestImplementation(){
@@ -38,8 +44,10 @@ public class ApplicationConfiguration {
 
                 lojista.getPedidos().add(pedido);
                 pedido.setResponsavel(lojista);
-                pedido.mudarStatus(StatusPedido.PAGO);
+                pedido.setDataHoraPedido(LocalDateTime.now());
+                AtualizacaoStatus atualizacaoStatus = pedido.mudarStatus(StatusPedido.PAGO);
 
+                atualizacaoStatusRepository.save(atualizacaoStatus);
                 pedidoRepository.save(pedido);
                 usuarioRepository.save(lojista);
             }
@@ -50,9 +58,10 @@ public class ApplicationConfiguration {
     public TornarEnviadoStrategy tornarEnviadoStrategyTestImplementation(){
         return new TornarEnviadoStrategy() {
             @Override
+            @Transactional
             public void executar(UUID idPedido) {
                 Pedido pedido = buscarPedidoPorIdFetchUsuarioFetchAtualizacaoPedido(idPedido);
-                Usuario lojistaResponsavel = usuarioRepository.findByContainingPedidoAndRole(Role.LOJISTA, pedido);
+                Usuario lojistaResponsavel = pedido.getResponsavel();
                 List<Usuario> entregadores = usuarioRepository.findByRoleFetchPedido(Role.ENTREGADOR);
                 Collections.shuffle(entregadores);
 
@@ -60,11 +69,11 @@ public class ApplicationConfiguration {
                 Usuario entregador = entregadores.getFirst();
                 pedido.setResponsavel(entregador);
                 entregador.getPedidos().add(pedido);
-                pedido.mudarStatus(StatusPedido.ENVIADO);
+                AtualizacaoStatus atualizacaoStatus = pedido.mudarStatus(StatusPedido.ENVIADO);
 
+                atualizacaoStatusRepository.save(atualizacaoStatus);
                 pedidoRepository.save(pedido);
-                usuarioRepository.save(lojistaResponsavel);
-                usuarioRepository.save(entregador);
+                usuarioRepository.saveAll(List.of(lojistaResponsavel, entregador));
             }
         };
     }
@@ -73,9 +82,16 @@ public class ApplicationConfiguration {
     public TornarEntregueStrategy tornarEntregueStrategyTestImplementation(){
         return new TornarEntregueStrategy() {
             @Override
+            @Transactional
             public void executar(UUID idPedido) {
                 Pedido pedido = buscarPedidoPorIdFetchUsuarioFetchAtualizacaoPedido(idPedido);
-                pedido.mudarStatus(StatusPedido.ENTREGUE);
+                Usuario entregadorResponsavel = pedido.getResponsavel();
+                pedido.setResponsavel(null);
+                AtualizacaoStatus atualizacaoStatus = pedido.mudarStatus(StatusPedido.ENTREGUE);
+
+                atualizacaoStatusRepository.save(atualizacaoStatus);
+                usuarioRepository.save(entregadorResponsavel);
+                pedidoRepository.save(pedido);
             }
         };
     }
@@ -84,9 +100,14 @@ public class ApplicationConfiguration {
     public TornarCanceladoStrategy tornarCanceladoStrategyTestImplementation(){
         return new TornarCanceladoStrategy() {
             @Override
+            @Transactional
             public void executar(UUID idPedido) {
                 Pedido pedido = buscarPedidoPorIdFetchUsuarioFetchAtualizacaoPedido(idPedido);
-                pedido.mudarStatus(StatusPedido.CANCELADO);
+                AtualizacaoStatus atualizacaoStatus = pedido.mudarStatus(StatusPedido.CANCELADO);
+                pedido.setResponsavel(null);
+
+                pedidoRepository.save(pedido);
+                atualizacaoStatusRepository.save(atualizacaoStatus);
             }
         };
     }

@@ -65,14 +65,15 @@ VALUES ('11111111-1111-1111-1111-111111111111',
 
 INSERT
 INTO order_management.pedido_tb
-(id, data_cadastro, data_atualizacao, data_hora_pedido, status, version, usuario_id, criado_por)
+(id, data_cadastro, data_atualizacao, data_hora_pedido, status, version, usuario_id, criado_por, responsavel_id)
 VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
         CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
         DATEADD('DAY', -5, CURRENT_TIMESTAMP),
         'PAGO',
         0,
         '33333333-3333-3333-3333-333333333333',
-        '33333333-3333-3333-3333-333333333333'),
+        '33333333-3333-3333-3333-333333333333',
+        '66666666-6666-6666-6666-666666666666'),
 
        ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
         CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
@@ -80,14 +81,16 @@ VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
         'PAGO',
         0,
         '44444444-4444-4444-4444-444444444444',
-        '44444444-4444-4444-4444-444444444444'),
+        '44444444-4444-4444-4444-444444444444',
+        '66666666-6666-6666-6666-666666666666'),
 
        ('cccccccc-cccc-cccc-cccc-cccccccccccc',
         CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
         DATEADD('DAY', -2, CURRENT_TIMESTAMP), 'CANCELADO',
         0,
         '22222222-2222-2222-2222-222222222222',
-        '22222222-2222-2222-2222-222222222222'),
+        '22222222-2222-2222-2222-222222222222',
+        NULL),
 
        ('dddddddd-dddd-dddd-dddd-dddddddddddd',
         CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
@@ -95,16 +98,18 @@ VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
         'ENTREGUE',
         0,
         '33333333-3333-3333-3333-333333333333',
-        '33333333-3333-3333-3333-333333333333'),
+        '33333333-3333-3333-3333-333333333333',
+        NULL),
 
        ('eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee',
         CURRENT_TIMESTAMP,
         CURRENT_TIMESTAMP,
-        CURRENT_TIMESTAMP,
+        NULL,
         'PENDENTE',
         0,
         '33333333-3333-3333-3333-333333333333',
-        '33333333-3333-3333-3333-333333333333');
+        '33333333-3333-3333-3333-333333333333',
+        NULL);
 
 -- ==========================
 -- PRODUTOS

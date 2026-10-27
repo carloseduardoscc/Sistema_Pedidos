@@ -73,7 +73,7 @@ spring:
   security:
     allowed-origins: ['http://localhost:*']
     jwt:
-      secret-key: "P3T09XjY7v0uUfMub4vC/16bYYsfY4XLqkquEk6w2vI="
+      secret-key: ${JWT_SECRET_KEY:"chavetesteP3T09XjY7v0uUfMub4vC/16bYYsfY4XLqkquEk6w2vI="}
 # Logging
 logging:
   level:
@@ -109,7 +109,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: validate
+      ddl-auto:
     properties:
       hibernate:
         format_sql: true
@@ -117,7 +117,7 @@ spring:
   security:
     allowed-origins: ${ALLOWED_ORIGINS}
     jwt:
-      secret-key: ${JWT_SECRET_KEY}
+      secret-key: ${JWT_SECRET_KEY:"chavetesteP3T09XjY7v0uUfMub4vC/16bYYsfY4XLqkquEk6w2vI="}
 # Logging
 logging:
   level:
