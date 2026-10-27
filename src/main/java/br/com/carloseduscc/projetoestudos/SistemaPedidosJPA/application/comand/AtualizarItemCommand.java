@@ -1,12 +1,8 @@
 package br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.comand;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Size;
-
-import java.math.BigDecimal;
 
 @Schema(name = "Requisição para atualizar item")
 public record AtualizarItemCommand(

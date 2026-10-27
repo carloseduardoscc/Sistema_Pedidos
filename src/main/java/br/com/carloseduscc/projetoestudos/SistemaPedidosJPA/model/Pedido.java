@@ -11,7 +11,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -26,7 +28,6 @@ public class Pedido {
     public static final float VALOR_TOTAL_MAXIMO_PEDIDO = 10_000;
 
     {
-        this.dataHoraPedido = LocalDateTime.now();
         this.itens = new HashSet<>();
         this.status = StatusPedido.PENDENTE;
     }
@@ -56,6 +57,9 @@ public class Pedido {
 
     @ManyToOne
     private Usuario usuario;
+
+    @ManyToOne
+    private Usuario responsavel;
 
     // Auditoria
     @CreatedDate
@@ -113,9 +117,10 @@ public class Pedido {
         }
     }
 
-    public void mudarStatus(StatusPedido status){
+    public AtualizacaoStatus mudarStatus(StatusPedido status){
         this.status.validarTransacao(status);
-        adicionarAtualizacaoDeStatus(status);
+        AtualizacaoStatus atualizacaoStatus = adicionarAtualizacaoDeStatus(status);
         this.status = status;
+        return atualizacaoStatus;
     }
 }

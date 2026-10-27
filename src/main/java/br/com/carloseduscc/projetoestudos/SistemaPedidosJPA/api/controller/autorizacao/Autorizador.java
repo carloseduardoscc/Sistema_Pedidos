@@ -1,6 +1,5 @@
 package br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.api.controller.autorizacao;
 
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.PedidoService;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.exception.NaoEncontradoException;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.ItemPedidoRepository;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.PedidoRepository;
@@ -8,7 +7,7 @@ import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.Usu
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.security.CustomAuthentication;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.ItemPedido;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Pedido;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Roles;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Role;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Usuario;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -25,7 +24,6 @@ public class Autorizador {
     private final PedidoRepository pedidoRepository;
     private final ItemPedidoRepository itemPedidoRepository;
     private final UsuarioRepository usuarioRepository;
-    private final PedidoService pedidoService;
 
     public boolean isUsuarioDonoItem(UUID itemId, UUID usuarioId) {
         Optional<ItemPedido> itemOpt = itemPedidoRepository.findById(itemId);
@@ -40,14 +38,14 @@ public class Autorizador {
     public boolean podeAbrirNovoPedido(Authentication authentication, UUID usuarioAfetadoId) {
         if (authentication instanceof CustomAuthentication customAuthentication) {
             Usuario usuarioAutenticado = customAuthentication.getUsuario();
-            if (usuarioAutenticado.getRoles().contains(Roles.CLIENTE) && usuarioAutenticado.getId().equals(usuarioAfetadoId)) {
+            if (usuarioAutenticado.getRole().equals(Role.CLIENTE) && usuarioAutenticado.getId().equals(usuarioAfetadoId)) {
                 return true;
             }
 
             Usuario usuarioAfetado = usuarioRepository.findById(usuarioAfetadoId).orElseThrow(() ->
                     new NaoEncontradoException("Usuário informado não existe"));
 
-            if (usuarioAutenticado.getRoles().contains(Roles.ADMIN) && usuarioAfetado.getRoles().contains(Roles.CLIENTE)){
+            if (usuarioAutenticado.getRole().equals(Role.ADMIN) && usuarioAfetado.getRole().equals(Role.CLIENTE)){
                 return true;
             }
             return false;

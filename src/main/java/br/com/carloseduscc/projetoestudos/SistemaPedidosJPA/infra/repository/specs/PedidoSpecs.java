@@ -23,12 +23,19 @@ public class PedidoSpecs {
         };
     }
 
-    public static Specification<Pedido> usuarioEmailIsLike(String usuarioEmail){
+    public static Specification<Pedido> usuarioOrResponsavelEmailIsLike(String usuarioEmail) {
         return (root, query, cb) -> {
-            var usuarioJoin = root.join("usuario", JoinType.INNER);
-            return cb.like(
-                    cb.upper(usuarioJoin.get("email")),
-                    "%" + usuarioEmail.toUpperCase() + "%"
+            var usuarioJoin = root.join("usuario", JoinType.LEFT);
+            var responsavelJoin = root.join("responsavel", JoinType.LEFT);
+            return cb.or(
+                    cb.like(
+                            cb.upper(usuarioJoin.get("email")),
+                            "%" + usuarioEmail.toUpperCase() + "%"
+                    ),
+                    cb.like(
+                            cb.upper(responsavelJoin.get("email")),
+                            "%" + usuarioEmail.toUpperCase() + "%"
+                    )
             );
         };
     }

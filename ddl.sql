@@ -34,7 +34,7 @@
         nome varchar(100) not null,
         email varchar(254) unique,
         senha varchar(255),
-        roles enum ('ADMIN','CLIENTE','ENTREGADOR','LOJISTA') array,
+        role enum ('ADMIN','CLIENTE','ENTREGADOR','LOJISTA') array,
         primary key (id)
     );
 

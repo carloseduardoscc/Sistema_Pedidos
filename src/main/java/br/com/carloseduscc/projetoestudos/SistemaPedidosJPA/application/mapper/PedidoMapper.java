@@ -9,7 +9,7 @@ import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Pedido;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = ItemPedidoMapper.class)
+@Mapper(componentModel = "spring", uses = {ItemPedidoMapper.class, UsuarioMapper.class})
 public interface PedidoMapper {
 
     @Mapping(target = "totalItens", expression = "java( pedido.getItens().size() )")

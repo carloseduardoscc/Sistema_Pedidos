@@ -4,11 +4,14 @@ import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.dto.erro
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.dto.erro.ErroResposta;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.exception.NaoEncontradoException;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.exception.OperacaoNaoPermitidaException;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.exception.RefreshTokenInvalidoException;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.exception.RegistroDuplicadoException;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.exception.RegraDeNegocioException;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.core.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -23,10 +26,22 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErroResposta handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        log.debug("Erro do cliente: {}", e.getMessage());
+        return new ErroResposta(
+                HttpStatus.BAD_REQUEST.value(),
+                "Erro na requisiçao",
+                List.of(new CampoErro("Causa", e.getMessage()))
+        );
+    }
+
     @ExceptionHandler(AuthenticationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErroResposta handleAuthenticationException(AuthenticationException e) {
-        log.info("Erro por falta de autenticação: {}", e.getMessage());
+        log.debug("Erro de autenticação: {}", e.getMessage());
         return new ErroResposta(
                 HttpStatus.UNAUTHORIZED.value(),
                 "Não autenticado / autenticação falhou",
@@ -34,10 +49,38 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(RefreshTokenInvalidoException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErroResposta handleRefreshTokenInvalidoException(RefreshTokenInvalidoException e) {
+        log.debug("Erro por tentativa de autenticação com refresh token expirado: {}", e.getMessage());
+        return new ErroResposta(
+                HttpStatus.UNAUTHORIZED.value(),
+                "Refresh token inválido",
+                List.of(
+                        new CampoErro("Causa", "O refresh token utilizado expirou, já foi utilizado ou foi revogado, faça login novamente para obter um novo"),
+                        new CampoErro("ExceptionMessage", e.getMessage())
+                )
+        );
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErroResposta handleAuthenticationException(ExpiredJwtException e) {
+        log.debug("Erro por tentativa de autenticação com token expirado: {}", e.getMessage());
+        return new ErroResposta(
+                HttpStatus.UNAUTHORIZED.value(),
+                "Access token inválido",
+                List.of(
+                        new CampoErro("Causa", "O token utilizado expirou, faça a rotação usando o refresh token para obter um novo"),
+                        new CampoErro("ExceptionMessage", e.getMessage())
+                )
+        );
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErroResposta handleAccessDeniedException(AccessDeniedException e) {
-        log.info("Erro de acesso negado / permissões insuficientes: {}", e.getMessage());
+        log.debug("Erro de acesso negado / permissões insuficientes: {}", e.getMessage());
         return new ErroResposta(
                 HttpStatus.FORBIDDEN.value(),
                 "Acesso negado",
@@ -48,7 +91,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NaoEncontradoException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     ErroResposta handleNaoEncontradoException(NaoEncontradoException e) {
-        log.info("Erro de recurso não encontrado: {}", e.getMessage());
+        log.debug("Erro de recurso não encontrado: {}", e.getMessage());
         return new ErroResposta(
                 HttpStatus.NOT_FOUND.value(),
                 "Não encontrado",
@@ -59,7 +102,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(OperacaoNaoPermitidaException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     ErroResposta handleOperacaoNaoPermitidaException(OperacaoNaoPermitidaException ex) {
-        log.info("Erro de operação não permitida: {}",ex.getMessage());
+        log.debug("Erro de operação não permitida: {}", ex.getMessage());
         return new ErroResposta(
                 HttpStatus.CONFLICT.value(),
                 "Operação não permitida",
@@ -70,7 +113,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RegraDeNegocioException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     ErroResposta handleRegraDeNegocioException(RegraDeNegocioException ex) {
-        log.info("Erro de violação de política interna: {}",ex.getMessage());
+        log.debug("Erro de violação de política interna: {}", ex.getMessage());
         return new ErroResposta(
                 HttpStatus.CONFLICT.value(),
                 "Violação de política interna",
@@ -81,7 +124,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RegistroDuplicadoException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     ErroResposta handleRegistroDuplicadoException(RegistroDuplicadoException ex) {
-        log.info("Erro de registro duplicado: {}", ex.getMessage());
+        log.debug("Erro de registro duplicado: {}", ex.getMessage());
         return new ErroResposta(
                 HttpStatus.CONFLICT.value(),
                 "Registro duplicado",
@@ -92,7 +135,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     ErroResposta handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.info("Erro de validação: {}",e.getMessage());
+        log.debug("Erro de validação: {}", e.getMessage());
         return new ErroResposta(
                 HttpStatus.UNPROCESSABLE_ENTITY.value(),
                 "Erro de validação",
@@ -105,7 +148,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(PropertyReferenceException.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     ErroResposta handlePropertyReferenceException(PropertyReferenceException e) {
-        log.info("Erro de validação: {}",e.getMessage());
+        log.debug("Erro de validação: {}", e.getMessage());
+        return new ErroResposta(
+                HttpStatus.UNPROCESSABLE_ENTITY.value(),
+                "Parâmetro inválido",
+                List.of(new CampoErro("Causa", e.getMessage()))
+        );
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    ErroResposta handleIllegalArgumentException(IllegalArgumentException e) {
+        log.debug("Erro de validação: {}", e.getMessage());
         return new ErroResposta(
                 HttpStatus.UNPROCESSABLE_ENTITY.value(),
                 "Parâmetro inválido",
@@ -120,7 +174,8 @@ public class GlobalExceptionHandler {
         return new ErroResposta(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Ocorreu um erro inesperado, entre em contato com a administração.",
-                List.of(new CampoErro("Mensagem", e.getMessage()))
+                List.of()
         );
     }
+
 }

@@ -1,5 +1,10 @@
 --- # DEFAULT PROFILE
 spring:
+  config:
+    zone-id: "America/Sao_Paulo"
+    frontend-url: ${FRONTEND_URL}
+    access_token_lifetime:
+    refresh_token_lifetime:
   application:
     name: sistema_pedidos_api
   output:
@@ -11,6 +16,11 @@ spring:
     open-in-view: false
 # Security
   security:
+    refresh-token:
+      expiration-time: 604800000 # 7 dias
+    jwt:
+      expiration-time: 3600000 # 1 hora
+    allowed-origins: []
     oauth2:
       client:
         registration:
@@ -32,12 +42,13 @@ springdoc:
 --- # TEST PROFILE
 spring:
   config:
+    frontend-url: ${FRONTEND_URL:http://localhost:5173}
     activate:
       on-profile: test
 # Datasource
   datasource:
     username: sa
-    url: "jdbc:h2:mem:testdb;INIT=CREATE SCHEMA IF NOT EXISTS order_management\\;CREATE SCHEMA IF NOT EXISTS stock"
+    url: "jdbc:h2:mem:testdb;INIT=CREATE SCHEMA IF NOT EXISTS order_management\\;CREATE SCHEMA IF NOT EXISTS auth\\;CREATE SCHEMA IF NOT EXISTS stock"
     password: ''
     driver-class-name: org.h2.Driver
   sql:
@@ -58,6 +69,11 @@ spring:
         web-allow-others: true
       enabled: true
       path: /h2-console
+  # Security
+  security:
+    allowed-origins: ['http://localhost:*']
+    jwt:
+      secret-key: ${JWT_SECRET_KEY:"chavetesteP3T09XjY7v0uUfMub4vC/16bYYsfY4XLqkquEk6w2vI="}
 # Logging
 logging:
   level:
@@ -81,6 +97,7 @@ management:
 --- # HOMOLOG PROFILE
 spring:
   config:
+    frontend-url: ${FRONTEND_URL:http://localhost:5173}
     activate:
       on-profile: homologation
 # Datasource
@@ -92,10 +109,15 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: validate
+      ddl-auto:
     properties:
       hibernate:
         format_sql: true
+# Security
+  security:
+    allowed-origins: ${ALLOWED_ORIGINS}
+    jwt:
+      secret-key: ${JWT_SECRET_KEY:"chavetesteP3T09XjY7v0uUfMub4vC/16bYYsfY4XLqkquEk6w2vI="}
 # Logging
 logging:
   level:
@@ -127,6 +149,11 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+# Security
+  security:
+    allowed-origins: ${ALLOWED_ORIGINS}
+    jwt:
+      secret-key: ${JWT_SECRET_KEY}
 # Logging
 logging:
   level:

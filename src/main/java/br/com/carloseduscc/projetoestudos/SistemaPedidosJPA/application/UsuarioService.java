@@ -1,7 +1,6 @@
 package br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application;
 
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.comand.AtualizarDadosUsuarioCommand;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.comand.CadastrarUsuarioCommand;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.dto.pedido.AbrirPedidoResponseDTO;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.dto.usuario.UsuarioDTO;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.exception.NaoEncontradoException;
@@ -15,13 +14,12 @@ import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Pedido;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.StatusPedido;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Usuario;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.exception.RegraDeNegocioException;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,15 +35,6 @@ public class UsuarioService {
     final private UsuarioMapper mapper;
     final private PedidoMapper pedidoMapper;
     final private UsuarioValidator validator;
-    final private PasswordEncoder encoder;
-
-    public UsuarioDTO cadastrarUsuario(CadastrarUsuarioCommand usuarioCmd) {
-        Usuario usuario = mapper.fromCommand(usuarioCmd);
-        usuario.setSenha(encoder.encode(usuario.getSenha()));
-        validator.validarCadastro(usuario);
-        Usuario usuarioSalvo = repository.save(usuario);
-        return mapper.toDTO(usuarioSalvo);
-    }
 
     public UsuarioDTO buscarDetalhes(UUID id) {
         Usuario usuario = repository.findById(id)
@@ -63,6 +52,15 @@ public class UsuarioService {
 
         return repository.findAll(usuarioSpecs, pageable).map(mapper::toDTO);
 
+    }
+
+    public UsuarioDTO buscarDetalhesUsuarioLogado() {
+        if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof Usuario usuario) {
+            return mapper.toDTO(usuario);
+        }
+        throw new RuntimeException("Usuário armazenado no contexto do security não é uma instância de CustomAuthentication como esperado, é um "
+                + SecurityContextHolder.getContext().getAuthentication().getPrincipal().getClass().getName()
+        );
     }
 
     @Transactional

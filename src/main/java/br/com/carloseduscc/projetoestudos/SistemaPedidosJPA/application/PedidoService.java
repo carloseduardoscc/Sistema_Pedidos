@@ -8,20 +8,22 @@ import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.exceptio
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.mapper.ItemPedidoMapper;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.mapper.PedidoMapper;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.query_filters.RequisicaoFiltroPedido;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.strategies.fluxo_pedidos.TornarCanceladoStrategy;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.strategies.fluxo_pedidos.TornarEntregueStrategy;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.strategies.fluxo_pedidos.TornarEnviadoStrategy;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.strategies.fluxo_pedidos.TornarPagoStrategy;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.ItemPedidoRepository;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.PedidoRepository;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.ProdutoRepository;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.UsuarioRepository;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.*;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.ItemPedido;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Pedido;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Produto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -29,12 +31,15 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public class PedidoService {
 
-    private final UsuarioRepository usuarioRepository;
     private final PedidoRepository pedidoRepository;
     private final ItemPedidoRepository itemPedidoRepository;
     private final ProdutoRepository produtoRepository;
     private final ItemPedidoMapper itemPedidoMapper;
     private final PedidoMapper pedidoMapper;
+    private final TornarPagoStrategy tornarPagoStrategy;
+    private final TornarEnviadoStrategy tornarEnviadoStrategy;
+    private final TornarEntregueStrategy tornarEntregueStrategy;
+    private final TornarCanceladoStrategy tornarCanceladoStrategy;
 
     public PedidoDetalhadoDTO obterDetalhes(UUID id) {
         Pedido pedido = pedidoRepository.buscarPedidoFetchProdutoItemAtualizacaostatus(id)
@@ -74,35 +79,24 @@ public class PedidoService {
     }
 
     public void tornarPago(UUID id) {
-        mudarStatus(id, StatusPedido.PAGO);
+        tornarPagoStrategy.executar(id);
     }
 
     public void tornarEnviado(UUID id) {
-        mudarStatus(id, StatusPedido.ENVIADO);
+        tornarEnviadoStrategy.executar(id);
     }
 
     public void tornarEntregue(UUID id) {
-        mudarStatus(id, StatusPedido.ENTREGUE);
-
+        tornarEntregueStrategy.executar(id);
     }
 
     @Transactional
     public void tornarCancelado(UUID id) {
-        mudarStatus(id, StatusPedido.CANCELADO);
-    }
-
-    private void mudarStatus(UUID id, StatusPedido statusPedido) {
-        Pedido pedido = pedidoRepository.buscarPedidoFetchUsuario(id)
-                .orElseThrow(getPedidoNaoEncontradoException(id));
-        pedido.mudarStatus(statusPedido);
+        tornarCanceladoStrategy.executar(id);
     }
 
     private static Supplier<NaoEncontradoException> getPedidoNaoEncontradoException(UUID id) {
         return () -> new NaoEncontradoException("Pedido com Id: " + id.toString() + " não encontrado");
-    }
-
-    private static Supplier<NaoEncontradoException> getUsuarioNaoEncontradoException(UUID id) {
-        return () -> new NaoEncontradoException("Usuário com Id: " + id.toString() + " não encontrado");
     }
 
     private static Supplier<NaoEncontradoException> getProdutoNaoEncontradoException(UUID id) {

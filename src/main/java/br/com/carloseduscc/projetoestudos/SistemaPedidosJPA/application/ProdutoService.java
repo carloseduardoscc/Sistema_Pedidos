@@ -6,10 +6,9 @@ import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.exceptio
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.mapper.ProdutoMapper;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.application.query_filters.RequisicaoFiltroProduto;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.ItemPedidoRepository;
-import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Produto;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.ProdutoRepository;
+import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Produto;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
