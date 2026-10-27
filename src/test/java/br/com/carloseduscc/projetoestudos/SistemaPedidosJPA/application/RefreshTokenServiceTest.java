@@ -7,6 +7,7 @@ import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.repository.Ref
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.infra.security.RefreshTokenService;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.RefreshToken;
 import br.com.carloseduscc.projetoestudos.SistemaPedidosJPA.model.Usuario;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +15,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Profile;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -31,9 +37,22 @@ class RefreshTokenServiceTest {
     private RefreshTokenRepository mockRepository;
     @Mock
     private HashGenerator mockHashGenerator;
-
     @InjectMocks
     private RefreshTokenService refreshTokenService;
+
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(
+                refreshTokenService,
+                "zoneId",
+                "America/Sao_Paulo"
+        );
+        ReflectionTestUtils.setField(
+                refreshTokenService,
+                "lifetime",
+                604800000L
+        );
+    }
 
     @Test
     @DisplayName("Ao criar token deve armazenar somente hash")
@@ -56,8 +75,7 @@ class RefreshTokenServiceTest {
         RefreshTokenService.RefreshTokenEmitidoDTO dto = refreshTokenService.criar(usuario);
 
         // Assert
-        verify(mockRepository).save(capturador.capture());
-        RefreshToken tokenSalvo = capturador.getValue();
+        verify(mockRepository).save(capturador.capture());        RefreshToken tokenSalvo = capturador.getValue();
         assertEquals(tokenHash, tokenSalvo.getTokenHash());
         assertNotNull(dto);
         assertEquals(tokenCru, dto.token());
